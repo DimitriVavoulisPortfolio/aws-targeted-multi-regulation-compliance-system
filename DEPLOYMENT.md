@@ -18,17 +18,17 @@ Before beginning the deployment, ensure you have:
 1. **Deploy the S3 bucket for storing regulation files**
    - Navigate to the CloudFormation console
    - Create a new stack
-   - Upload the template: `CloudFormation Template: S3 Bucket for Regulation Files.txt`
+   - Upload the template: `regulation-files-bucket.yaml`
    - Follow the prompts to create the stack
 
 2. **Deploy the DynamoDB table for compliance rules**
    - Create a new CloudFormation stack
-   - Upload the template: `CloudFormation Template: DynamoDB Table for Compliance Rules.txt`
+   - Upload the template: `regulation-files-dynamodb.yaml`
    - Complete the stack creation process
 
 3. **Create the KMS key for encryption**
    - Create another CloudFormation stack
-   - Use the template: `KMS Key for Report Bucket Encryption.txt`
+   - Use the template: `kms-key-report-bucket`
    - Finish the stack creation
 
 ### Stage 2: Compliance Scanning
@@ -36,26 +36,26 @@ Before beginning the deployment, ensure you have:
 4. **Create the IAM role for the Regulation Parser Lambda**
    - Go to the IAM console
    - Create a new role
-   - Attach the policy from: `Verified IAM Policy for Regulation Parser Lambda.txt`
+   - Attach the policy from: `iam-policy-regulation-parser-function.json`
 
 5. **Deploy the Regulation Parser Lambda function**
    - Navigate to the Lambda console
    - Create a new function
-   - Upload the code from: `Updated Lambda Function with Error Handling.txt`
+   - Upload the code from: `regulation-parser-function-lambda.py`
    - Assign the IAM role created in step 4
 
 6. **Create the IAM role for the Compliance Scanner Lambda**
    - In the IAM console, create another role
-   - Use the policy from: `Updated IAM Policy for V2 Compliance Scanner Lambda.txt`
+   - Use the policy from: `iam-policy-primary-compliance-scanner-function.json`
 
 7. **Deploy the Compliance Scanner Lambda function**
    - Create a new Lambda function
-   - Use the code from: `Comprehensive Multi-Regulation Resource Scanner Lambda Function V2.txt`
+   - Use the code from: `primary-compliance-scanner-function-lambda.py`
    - Assign the IAM role from step 6
 
 8. **Create the IAM role for the Secondary Compliance Scanner Lambda**
    - Create another IAM role
-   - Attach the policy from: `Current IAM Policy for Secondary Compliance Scanner Lambda.txt`
+   - Attach the policy from: ``
 
 9. **Deploy the Secondary Compliance Scanner Lambda function**
    - Create another Lambda function
