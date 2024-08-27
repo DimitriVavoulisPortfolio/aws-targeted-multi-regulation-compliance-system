@@ -89,12 +89,12 @@ This project uses AWS CloudFormation for infrastructure as code. To deploy the s
 
 2. Clone the repository:
    ```
-   git clone https://github.com/dimitrivavoulisportfolio/aws-multi-regulation-compliance-system.git
+   git clone https://github.com/dimitrivavoulisportfolio/targeted-multi-regulation-compliance-system.git
    ```
 
 3. Navigate to the project directory:
    ```
-   cd aws-multi-regulation-compliance-system
+   cd targeted-multi-regulation-compliance-system
    ```
 
 4. Create an S3 bucket in your AWS account to host the CloudFormation templates:
@@ -104,18 +104,57 @@ This project uses AWS CloudFormation for infrastructure as code. To deploy the s
 
 5. Upload all the CloudFormation templates to your S3 bucket:
    ```
-   aws s3 sync . s3://your-cfn-templates-bucket-name/compliance-system/ --exclude "*" --include "*.yaml"
+   aws s3 sync cloudformation/ s3://your-cfn-templates-bucket-name/compliance-system/ --exclude "*" --include "*.yaml"
    ```
 
-6. Deploy the master stack, which will create all nested stacks:
+6. Deploy the individual stacks in the following order:
+
+   a. IAM Roles Stack:
    ```
-   aws cloudformation create-stack --stack-name multi-regulation-compliance --template-url https://your-cfn-templates-bucket-name.s3.amazonaws.com/compliance-system/master-stack.yaml --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
+   aws cloudformation create-stack --stack-name targeted-compliance-iam-roles --template-url https://your-cfn-templates-bucket-name.s3.amazonaws.com/compliance-system/iam-roles-stack.yaml --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
+   ```
+
+   b. KMS Keys Stack:
+   ```
+   aws cloudformation create-stack --stack-name targeted-compliance-kms-keys --template-url https://your-cfn-templates-bucket-name.s3.amazonaws.com/compliance-system/kms-keys-stack.yaml
+   ```
+
+   c. CloudTrail Stack:
+   ```
+   aws cloudformation create-stack --stack-name targeted-compliance-cloudtrail --template-url https://your-cfn-templates-bucket-name.s3.amazonaws.com/compliance-system/cloudtrail-stack.yaml --capabilities CAPABILITY_IAM
+   ```
+
+   d. CloudWatch Logs Stack:
+   ```
+   aws cloudformation create-stack --stack-name targeted-compliance-cloudwatch-logs --template-url https://your-cfn-templates-bucket-name.s3.amazonaws.com/compliance-system/cloudwatch-logs-stack.yaml
+   ```
+
+   e. SNS Notification Stack:
+   ```
+   aws cloudformation create-stack --stack-name targeted-compliance-sns --template-url https://your-cfn-templates-bucket-name.s3.amazonaws.com/compliance-system/sns-notification-stack.yaml
+   ```
+
+   f. Secondary Bucket Stack:
+   ```
+   aws cloudformation create-stack --stack-name targeted-compliance-secondary-bucket --template-url https://your-cfn-templates-bucket-name.s3.amazonaws.com/compliance-system/secondary-bucket-stack.yaml
+   ```
+
+   g. Primary Bucket Stack:
+   ```
+   aws cloudformation create-stack --stack-name targeted-compliance-primary-bucket --template-url https://your-cfn-templates-bucket-name.s3.amazonaws.com/compliance-system/primary-bucket-stack.yaml
    ```
 
 7. Monitor the stack creation process in the AWS CloudFormation console or using the AWS CLI:
    ```
-   aws cloudformation describe-stacks --stack-name multi-regulation-compliance
+   aws cloudformation describe-stacks --stack-name targeted-compliance-primary-bucket
    ```
+
+8. After all stacks are created successfully, upload the regulation JSON files to the primary S3 bucket:
+   ```
+   aws s3 sync regulations/ s3://your-primary-bucket-name/regulations/
+   ```
+
+Note: Ensure that you have the necessary permissions to create these resources in your AWS account. You may need to customize the stack names and parameters based on your specific requirements. Wait for each stack to complete before starting the next one.
 
 ## Adding New Regulations
 
@@ -155,7 +194,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 Dimitri Vavoulis - dimitrivavoulis3@gmail.com
 
-Project Link: [https://github.com/dimitrivavoulisportfolio/aws-targeted-multi-regulation-compliance-system](https://github.com/dimitrivavoulisportfolio/aws-targeted-multi-regulation-compliance-system)
+Project Link: [https://github.com/dimitrivavoulisportfolio/targeted-multi-regulation-compliance-system](https://github.com/dimitrivavoulisportfolio/targeted-multi-regulation-compliance-system)
 
 ---
 
