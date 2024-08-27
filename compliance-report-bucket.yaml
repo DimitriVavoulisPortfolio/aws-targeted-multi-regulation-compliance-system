@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'S3 bucket for storing compliance reports'
+
+Parameters:
+  ReportRetentionDays:
+    Type: Number
+    Default: 365
+    Description: 'Number of days to retain reports before archiving to Glacier'
+
+Resources:
+  ReportBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${AWS::StackName}-compliance-reports'
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: ArchiveOldReports
+            Status: Enabled
+            Transitions:
+              - StorageClass: Glacier
+                TransitionInDays: !Ref ReportRetentionDays
+
+  ReportBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ReportBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: EnforceTLS
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource: 
+              - !Sub '${ReportBucket.Arn}'
+              - !Sub '${ReportBucket.Arn}/*'
+            Condition:
+              Bool:
+                'aws:SecureTransport': false
+
+Outputs:
+  BucketName:
+    Description: 'Name of the S3 bucket for storing reports'
+    Value: !Ref ReportBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-ReportBucketName'
+  BucketArn:
+    Description: 'ARN of the S3 bucket for storing reports'
+    Value: !GetAtt ReportBucket.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-ReportBucketArn'
