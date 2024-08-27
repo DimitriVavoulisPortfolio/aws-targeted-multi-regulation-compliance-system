@@ -1,0 +1,37 @@
+{
+  "regulation": "CCPA",
+  "version": "1.0",
+  "lastUpdated": "2024-08-26",
+  "rules": [
+    {
+      "ruleId": "CCPA-1",
+      "description": "Ensure ability to provide consumers with their collected personal information",
+      "resourceType": "AWS::S3::Bucket",
+      "complianceCheck": {
+        "type": "CustomCheck",
+        "checkFunction": "checkS3DataRetrieval"
+      },
+      "remediationAction": "EnableS3DataRetrieval"
+    },
+    {
+      "ruleId": "CCPA-2",
+      "description": "Ensure proper deletion of consumer personal information upon request",
+      "resourceType": "AWS::RDS::DBInstance",
+      "complianceCheck": {
+        "type": "CustomCheck",
+        "checkFunction": "checkRDSDataDeletion"
+      },
+      "remediationAction": "EnableRDSDataDeletion"
+    },
+    {
+      "ruleId": "CCPA-3",
+      "description": "Ensure proper disclosure of personal information sales to third parties",
+      "resourceType": "AWS::APIGateway::RestAPI",
+      "complianceCheck": {
+        "type": "CustomCheck",
+        "checkFunction": "checkAPIGatewayDataSharing"
+      },
+      "remediationAction": "RestrictAPIGatewayDataSharing"
+    }
+  ]
+}
