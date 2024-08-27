@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'KMS Key for Report Bucket Encryption'
+
+Resources:
+  ReportBucketKMSKey:
+    Type: 'AWS::KMS::Key'
+    Properties:
+      Description: 'KMS key for encrypting compliance reports in S3'
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: 'Allow administration of the key'
+            Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+            Action:
+              - 'kms:Create*'
+              - 'kms:Describe*'
+              - 'kms:Enable*'
+              - 'kms:List*'
+              - 'kms:Put*'
+              - 'kms:Update*'
+              - 'kms:Revoke*'
+              - 'kms:Disable*'
+              - 'kms:Get*'
+              - 'kms:Delete*'
+              - 'kms:ScheduleKeyDeletion'
+              - 'kms:CancelKeyDeletion'
+            Resource: '*'
+          - Sid: 'Allow use of the key'
+            Effect: Allow
+            Principal:
+              AWS: 
+                - !GetAtt PDFReportGeneratorRole.Arn
+                - !GetAtt ReportNotificationRole.Arn
+            Action:
+              - 'kms:Encrypt'
+              - 'kms:Decrypt'
+              - 'kms:ReEncrypt*'
+              - 'kms:GenerateDataKey*'
+              - 'kms:DescribeKey'
+            Resource: '*'
+
+  ReportBucketKMSKeyAlias:
+    Type: 'AWS::KMS::Alias'
+    Properties:
+      AliasName: !Sub 'alias/${AWS::StackName}-report-bucket-key'
+      TargetKeyId: !Ref ReportBucketKMSKey
+
+Outputs:
+  KMSKeyArn:
+    Description: 'ARN of the KMS Key for Report Bucket Encryption'
+    Value: !GetAtt ReportBucketKMSKey.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-ReportBucketKMSKeyArn'

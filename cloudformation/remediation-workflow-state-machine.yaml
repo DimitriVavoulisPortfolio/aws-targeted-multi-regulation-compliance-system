@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudFormation template for Remediation Workflow State Machine'
+
+Resources:
+  RemediationStateMachine:
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      StateMachineName: RemediationWorkflow
+      DefinitionString: 
+        Fn::Sub: |
+          {
+            "Comment": "Remediation Workflow for Non-Compliant Resources",
+            "StartAt": "DetermineRemediationType",
+            "States": {
+              "DetermineRemediationType": {
+                "Type": "Task",
+                "Resource": "${DetermineRemediationLambdaArn}",
+                "Next": "RemediationTypeChoice"
+              },
+              ...
+            }
+          }
+      RoleArn: !GetAtt StepFunctionsExecutionRole.Arn
+
+  StepFunctionsExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: states.amazonaws.com
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: StepFunctionsExecutionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "lambda:InvokeFunction"
+                Resource: "*"

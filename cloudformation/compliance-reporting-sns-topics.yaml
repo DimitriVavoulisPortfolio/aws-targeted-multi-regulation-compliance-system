@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'SNS Topic for Compliance Alerts'
+
+Resources:
+  AlertingSNSTopic:
+    Type: 'AWS::SNS::Topic'
+    Properties:
+      TopicName: !Sub '${AWS::StackName}-ComplianceAlerts'
+      KmsMasterKeyId: !Ref AlertingSNSTopicKMSKey
+
+  AlertingSNSTopicKMSKey:
+    Type: 'AWS::KMS::Key'
+    Properties:
+      Description: 'KMS key for encrypting SNS messages'
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: 'Allow administration of the key'
+            Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+            Action:
+              - 'kms:*'
+            Resource: '*'
+          - Sid: 'Allow use of the key'
+            Effect: Allow
+            Principal:
+              Service: 'sns.amazonaws.com'
+            Action:
+              - 'kms:Encrypt'
+              - 'kms:Decrypt'
+              - 'kms:ReEncrypt*'
+              - 'kms:GenerateDataKey*'
+              - 'kms:DescribeKey'
+            Resource: '*'
+
+Outputs:
+  SNSTopicArn:
+    Description: 'ARN of the SNS Topic for Compliance Alerts'
+    Value: !Ref AlertingSNSTopic
+    Export:
+      Name: !Sub '${AWS::StackName}-AlertingSNSTopicArn'

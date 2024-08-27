@@ -1,0 +1,54 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'EventBridge rule for triggering daily compliance report generation'
+
+Parameters:
+  EnvironmentName:
+    Type: String
+    Default: 'Production'
+    Description: 'Environment name for resource tagging'
+
+Resources:
+  DailyReportRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub '${AWS::StackName}-DailyComplianceReportRule'
+      Description: "Trigger daily compliance report generation"
+      ScheduleExpression: "cron(0 1 * * ? *)"  # Run daily at 1:00 AM UTC
+      State: "ENABLED"
+      Targets: 
+        - Arn: !GetAtt ComplianceReportAggregator.Arn
+          Id: "ComplianceReportAggregatorTarget"
+          DeadLetterConfig:
+            Arn: !GetAtt DLQForFailedExecutions.Arn
+      Tags:
+        - Key: Environment
+          Value: !Ref EnvironmentName
+        - Key: Project
+          Value: ComplianceReporting
+
+  ComplianceReportAggregatorPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref ComplianceReportAggregator
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt DailyReportRule.Arn
+
+  DLQForFailedExecutions:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub '${AWS::StackName}-FailedReportExecutions'
+      MessageRetentionPeriod: 1209600  # 14 days
+      Tags:
+        - Key: Environment
+          Value: !Ref EnvironmentName
+        - Key: Project
+          Value: ComplianceReporting
+
+Outputs:
+  DailyReportRuleArn:
+    Description: 'ARN of the EventBridge rule'
+    Value: !GetAtt DailyReportRule.Arn
+  DLQUrl:
+    Description: 'URL of the Dead Letter Queue for failed executions'
+    Value: !Ref DLQForFailedExecutions

@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'DynamoDB table for storing aggregated compliance reports'
+
+Parameters:
+  EnvironmentName:
+    Type: String
+    Default: 'Production'
+    Description: 'Environment name for resource tagging'
+
+Resources:
+  ComplianceReportTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: !Sub '${AWS::StackName}-compliance-reports'
+      AttributeDefinitions:
+        - AttributeName: report_id
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: S
+      KeySchema:
+        - AttributeName: report_id
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+      GlobalSecondaryIndexes:
+        - IndexName: TimestampIndex
+          KeySchema:
+            - AttributeName: timestamp
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      Tags:
+        - Key: Environment
+          Value: !Ref EnvironmentName
+        - Key: Project
+          Value: ComplianceReporting
+
+Outputs:
+  TableName:
+    Description: 'Name of the created DynamoDB table'
+    Value: !Ref ComplianceReportTable
+    Export:
+      Name: !Sub '${AWS::StackName}-ComplianceReportTable'
+  TableArn:
+    Description: 'ARN of the created DynamoDB table'
+    Value: !GetAtt ComplianceReportTable.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-ComplianceReportTableArn'

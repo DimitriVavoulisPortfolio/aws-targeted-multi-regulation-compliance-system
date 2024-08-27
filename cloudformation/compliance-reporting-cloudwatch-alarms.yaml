@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudWatch Alarms for Compliance Reporting'
+
+Resources:
+  FailedReportGenerationAlarm:
+    Type: 'AWS::CloudWatch::Alarm'
+    Properties:
+      AlarmName: !Sub '${AWS::StackName}-FailedReportGenerationAlarm'
+      AlarmDescription: 'Alarm if the daily report generation fails'
+      Namespace: 'AWS/Lambda'
+      MetricName: 'Errors'
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref PDFReportGeneratorLambda
+      Statistic: 'Sum'
+      Period: 86400  # 24 hours
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: 'GreaterThanOrEqualToThreshold'
+      TreatMissingData: 'breaching'
+      AlarmActions:
+        - !Ref AlertingSNSTopic
+
+  LowComplianceRateAlarm:
+    Type: 'AWS::CloudWatch::Alarm'
+    Properties:
+      AlarmName: !Sub '${AWS::StackName}-LowComplianceRateAlarm'
+      AlarmDescription: 'Alarm if the compliance rate drops below 80%'
+      Namespace: 'ComplianceReports'
+      MetricName: 'ComplianceRate'
+      Statistic: 'Average'
+      Period: 86400  # 24 hours
+      EvaluationPeriods: 1
+      Threshold: 80
+      ComparisonOperator: 'LessThanThreshold'
+      TreatMissingData: 'breaching'
+      AlarmActions:
+        - !Ref AlertingSNSTopic
+
+Outputs:
+  FailedReportGenerationAlarmArn:
+    Description: 'ARN of the Failed Report Generation Alarm'
+    Value: !Ref FailedReportGenerationAlarm
+  LowComplianceRateAlarmArn:
+    Description: 'ARN of the Low Compliance Rate Alarm'
+    Value: !Ref LowComplianceRateAlarm

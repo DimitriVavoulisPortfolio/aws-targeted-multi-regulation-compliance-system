@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'DynamoDB table for storing compliance rules'
+
+Resources:
+  ComplianceRulesTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: !Sub '${AWS::StackName}-compliance-rules'
+      AttributeDefinitions:
+        - AttributeName: RuleId
+          AttributeType: S
+        - AttributeName: Regulation
+          AttributeType: S
+      KeySchema:
+        - AttributeName: RuleId
+          KeyType: HASH
+        - AttributeName: Regulation
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+
+Outputs:
+  TableName:
+    Description: 'Name of the created DynamoDB table'
+    Value: !Ref ComplianceRulesTable
+    Export:
+      Name: !Sub '${AWS::StackName}-ComplianceRulesTable'
