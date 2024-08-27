@@ -115,7 +115,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 Dimitri Vavoulis - dimitrivavoulis3@gmail.com
 
 Project Link: [https://github.com/dimitrivavoulisportfolio/targeted-multi-regulation-compliance-system](https://github.com/dimitrivavoulisportfolio/targeted-multi-regulation-compliance-system)
-
----
-
-This project was developed as part of a professional portfolio to demonstrate expertise in cloud architecture, security, and regulatory compliance in AWS environments. It showcases advanced skills in creating scalable, secure, and compliant systems using infrastructure-as-code principles. Users can deploy this system in their own AWS accounts to manage compliance across multiple regulatory frameworks.
