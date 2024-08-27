@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'IAM Role for Report Notification Lambda'
+
+Resources:
+  ReportNotificationRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: !Sub '${AWS::StackName}-ReportNotificationRole'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: ReportNotificationPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 's3:GetObject'
+                  - 's3:GetObjectTagging'
+                Resource: !Sub '${ReportBucket.Arn}/*'
+              - Effect: Allow
+                Action:
+                  - 'sns:Publish'
+                Resource: !Ref AlertingSNSTopic
+
+Outputs:
+  RoleArn:
+    Description: 'ARN of the IAM Role for Report Notification Lambda'
+    Value: !GetAtt ReportNotificationRole.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-ReportNotificationRoleArn'
