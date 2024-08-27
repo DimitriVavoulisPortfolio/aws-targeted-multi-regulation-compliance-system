@@ -94,15 +94,6 @@ To add support for a new regulation:
 3. Add any necessary custom compliance checks to the `ComplianceScannerLambda`.
 4. Update the reporting components to include the new regulation in summaries.
 
-## Local Development
-
-1. Install the AWS SAM CLI for local Lambda function testing.
-2. Use the provided `samconfig.toml` file for local development settings.
-3. Run unit tests using the command:
-   ```
-   python -m unittest discover tests
-   ```
-
 ## Future Enhancements
 
 - Integration with AWS Config for continuous compliance monitoring
