@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'EventBridge rule for scheduling compliance report generation'
+
+Parameters:
+  ScheduleExpression:
+    Type: String
+    Default: "cron(0 1 ? * MON *)"
+    Description: "Schedule expression for report generation (default: 1:00 AM UTC every Monday)"
+
+Resources:
+  ReportGenerationSchedule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Trigger compliance report generation on schedule"
+      ScheduleExpression: !Ref ScheduleExpression
+      State: "ENABLED"
+      Targets: 
+        - Arn: !GetAtt PDFReportGeneratorLambda.Arn
+          Id: "PDFReportGeneratorTarget"
+          RetryPolicy:
+            MaximumEventAgeInSeconds: 3600
+            MaximumRetryAttempts: 2
+
+  PDFReportGeneratorPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref PDFReportGeneratorLambda
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt ReportGenerationSchedule.Arn
+
+  ReportGenerationDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub '${AWS::StackName}-ReportGenerationDLQ'
+      MessageRetentionPeriod: 1209600  # 14 days
+
+Outputs:
+  ScheduleRuleArn:
+    Description: 'ARN of the EventBridge rule for report generation'
+    Value: !GetAtt ReportGenerationSchedule.Arn
+  DeadLetterQueueUrl:
+    Description: 'URL of the Dead Letter Queue for failed report generation attempts'
+    Value: !Ref ReportGenerationDLQ
