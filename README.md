@@ -155,7 +155,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 Dimitri Vavoulis - dimitrivavoulis3@gmail.com
 
-Project Link: [https://github.com/dimitrivavoulisportfolio/aws-multi-regulation-compliance-system](https://github.com/dimitrivavoulisportfolio/aws-multi-regulation-compliance-system)
+Project Link: [https://github.com/dimitrivavoulisportfolio/aws-targeted-multi-regulation-compliance-system](https://github.com/dimitrivavoulisportfolio/aws-targeted-multi-regulation-compliance-system)
 
 ---
 
