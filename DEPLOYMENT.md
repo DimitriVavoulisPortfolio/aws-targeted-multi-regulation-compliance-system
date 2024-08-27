@@ -55,91 +55,91 @@ Before beginning the deployment, ensure you have:
 
 8. **Create the IAM role for the Secondary Compliance Scanner Lambda**
    - Create another IAM role
-   - Attach the policy from: ``
+   - Attach the policy from: `iam-policy-secondary-compliance-scanner-function.json`
 
 9. **Deploy the Secondary Compliance Scanner Lambda function**
    - Create another Lambda function
-   - Upload the code from: `Secondary Compliance Scanner Lambda Function.txt`
+   - Upload the code from: `secondary-compliance-scanner-function-lambda.py`
    - Assign the IAM role from step 8
 
 ### Stage 3: Remediation
 
 10. **Create the IAM role for the Remediation Orchestrator Lambda**
     - In the IAM console, create a new role
-    - Use the policy from: `IAM Policy for Remediation Orchestrator Lambda.txt`
+    - Use the policy from: `iam-policy-remediation-orchestrator-function.json`
 
 11. **Deploy the Remediation Orchestrator Lambda function**
     - Create a new Lambda function
-    - Upload the code from: `Production-Ready Remediation Orchestrator Lambda Function.txt`
+    - Upload the code from: `remediation-orchestrator-function-lambda.py`
     - Assign the IAM role from step 10
 
 12. **Deploy the Step Functions state machine for remediation**
     - Go to the CloudFormation console
     - Create a new stack
-    - Use the template: `Improved Remediation Workflow State Machine.txt`
+    - Use the template: `remediation-workflow-state-machine.yaml`
     - Complete the stack creation process
 
 ### Stage 4: Reporting
 
 13. **Deploy the DynamoDB table for storing compliance reports**
     - Create a new CloudFormation stack
-    - Upload the template: `CloudFormation Template for Compliance Report DynamoDB Table.txt`
+    - Upload the template: `compliance-report-dynamodb.yaml`
     - Follow the prompts to create the stack
 
 14. **Deploy the S3 bucket for storing generated reports**
     - Create another CloudFormation stack
-    - Use the template: `CloudFormation Template for Report Storage S3 Bucket.txt`
+    - Use the template: `compliance-report-bucket`
     - Complete the stack creation
 
 15. **Create the IAM role for the Compliance Report Aggregator Lambda**
     - In the IAM console, create a new role
-    - Attach the policy from: `IAM Role for Compliance Report Aggregator Lambda.txt`
+    - Attach the policy from: `iam-policy-compliance-report-agregator-function.json`
 
 16. **Deploy the Compliance Report Aggregator Lambda function**
     - Create a new Lambda function
-    - Upload the code from: `Compliance Report Aggregator Lambda Function.txt`
+    - Upload the code from: `compliance-report-agregator-function-lambda.json`
     - Assign the IAM role from step 15
 
 17. **Create the IAM role for the PDF Report Generator Lambda**
     - Create another IAM role
-    - Use the policy from: `IAM Role for PDF Report Generator Lambda.txt`
+    - Use the policy from: `iam-policy-pdf-compliance-report-generation-function.json`
 
 18. **Deploy the PDF Report Generator Lambda function**
     - Create a new Lambda function
-    - Use the code from: `PDF Compliance Report Generator Lambda Function.txt`
+    - Use the code from: `pdf-compliance-report-generation-function-lambda.py`
     - Assign the IAM role from step 17
 
 ### Stage 5: Notifications and Monitoring
 
 19. **Deploy the SNS topic for compliance alerts**
     - Create a new CloudFormation stack
-    - Upload the template: `SNS Topic for Compliance Alerts.txt`
+    - Upload the template: `compliance-reporting-sns-topics.yaml`
     - Complete the stack creation process
 
 20. **Create the IAM role for the Report Notification Lambda**
     - In the IAM console, create a new role
-    - Attach the policy from: `IAM Role for Report Notification Lambda.txt`
+    - Attach the policy from: `iam-policy-report-notification-function.json`
 
 21. **Deploy the Report Notification Lambda function**
     - Create a new Lambda function
-    - Upload the code from: `Complete Report Notification Lambda Function.txt`
+    - Upload the code from: `report-notification-function-lambda.py`
     - Assign the IAM role from step 20
 
 22. **Deploy CloudWatch alarms for monitoring**
     - Create a new CloudFormation stack
-    - Use the template: `CloudWatch Alarms for Compliance Reporting.txt`
+    - Use the template: `compliance-reporting-cloudwatch-alarms.yaml`
     - Follow the prompts to create the stack
 
 ### Stage 6: Scheduling
 
 23. **Deploy the EventBridge rule for daily compliance scans**
     - Create a new CloudFormation stack
-    - Upload the template: `CloudFormation Template: Daily Report EventBridge Rule.txt`
+    - Upload the template: `daily-report-eventbridge-rule.yaml`
     - Complete the stack creation process
 
 24. **Deploy the EventBridge rule for report generation**
     - Create another CloudFormation stack
-    - Use the template: `CloudFormation Template for Report Generation Scheduler.txt`
+    - Use the template: `report-generation-scheduler.yaml`
     - Finish the stack creation
 
 ## Final Steps
