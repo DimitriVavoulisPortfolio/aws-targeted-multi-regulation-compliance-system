@@ -1,0 +1,37 @@
+{
+  "regulation": "NIST 800-53",
+  "version": "1.0",
+  "lastUpdated": "2024-08-26",
+  "rules": [
+    {
+      "ruleId": "NIST-800-53-1",
+      "description": "Ensure proper access control policies are in place",
+      "resourceType": "AWS::IAM::Policy",
+      "complianceCheck": {
+        "type": "CustomCheck",
+        "checkFunction": "checkIAMPolicyCompliance"
+      },
+      "remediationAction": "UpdateIAMPolicy"
+    },
+    {
+      "ruleId": "NIST-800-53-2",
+      "description": "Ensure system and communications protection",
+      "resourceType": "AWS::EC2::SecurityGroup",
+      "complianceCheck": {
+        "type": "AWSConfig",
+        "configRuleName": "RESTRICTED_INCOMING_TRAFFIC"
+      },
+      "remediationAction": "UpdateSecurityGroupRules"
+    },
+    {
+      "ruleId": "NIST-800-53-3",
+      "description": "Ensure proper audit and accountability measures",
+      "resourceType": "AWS::CloudTrail::Trail",
+      "complianceCheck": {
+        "type": "AWSConfig",
+        "configRuleName": "CLOUD_TRAIL_ENABLED"
+      },
+      "remediationAction": "EnableCloudTrail"
+    }
+  ]
+}

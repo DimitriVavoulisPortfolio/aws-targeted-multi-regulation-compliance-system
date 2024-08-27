@@ -1,0 +1,37 @@
+{
+  "regulation": "SOX",
+  "version": "1.0",
+  "lastUpdated": "2024-08-26",
+  "rules": [
+    {
+      "ruleId": "SOX-1",
+      "description": "Ensure proper access controls are in place for financial data",
+      "resourceType": "AWS::S3::Bucket",
+      "complianceCheck": {
+        "type": "AWSConfig",
+        "configRuleName": "S3_BUCKET_POLICY_NOT_MORE_PERMISSIVE"
+      },
+      "remediationAction": "RestrictS3BucketPolicy"
+    },
+    {
+      "ruleId": "SOX-2",
+      "description": "Ensure all financial data is encrypted at rest",
+      "resourceType": "AWS::RDS::DBInstance",
+      "complianceCheck": {
+        "type": "AWSConfig",
+        "configRuleName": "RDS_STORAGE_ENCRYPTED"
+      },
+      "remediationAction": "EnableRDSEncryption"
+    },
+    {
+      "ruleId": "SOX-3",
+      "description": "Ensure proper audit trails for all financial transactions",
+      "resourceType": "AWS::CloudTrail::Trail",
+      "complianceCheck": {
+        "type": "AWSConfig",
+        "configRuleName": "CLOUD_TRAIL_ENABLED"
+      },
+      "remediationAction": "EnableCloudTrail"
+    }
+  ]
+}

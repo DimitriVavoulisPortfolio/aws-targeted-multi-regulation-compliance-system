@@ -1,0 +1,37 @@
+{
+  "regulation": "FISMA",
+  "version": "1.0",
+  "lastUpdated": "2024-08-26",
+  "rules": [
+    {
+      "ruleId": "FISMA-1",
+      "description": "Ensure proper risk assessment and management",
+      "resourceType": "AWS::Config::ConfigRule",
+      "complianceCheck": {
+        "type": "CustomCheck",
+        "checkFunction": "checkConfigRulesCompliance"
+      },
+      "remediationAction": "UpdateConfigRules"
+    },
+    {
+      "ruleId": "FISMA-2",
+      "description": "Ensure proper security controls are in place",
+      "resourceType": "AWS::EC2::Instance",
+      "complianceCheck": {
+        "type": "AWSConfig",
+        "configRuleName": "EC2_INSTANCE_MANAGED_BY_SSM"
+      },
+      "remediationAction": "EnableSSMManagement"
+    },
+    {
+      "ruleId": "FISMA-3",
+      "description": "Ensure proper incident response capabilities",
+      "resourceType": "AWS::CloudWatch::Alarm",
+      "complianceCheck": {
+        "type": "CustomCheck",
+        "checkFunction": "checkCloudWatchAlarms"
+      },
+      "remediationAction": "UpdateCloudWatchAlarms"
+    }
+  ]
+}

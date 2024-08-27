@@ -1,0 +1,37 @@
+{
+  "regulation": "HIPAA",
+  "version": "1.0",
+  "lastUpdated": "2024-08-26",
+  "rules": [
+    {
+      "ruleId": "HIPAA-1",
+      "description": "Ensure encryption of protected health information at rest",
+      "resourceType": "AWS::S3::Bucket",
+      "complianceCheck": {
+        "type": "AWSConfig",
+        "configRuleName": "S3_BUCKET_SERVER_SIDE_ENCRYPTION_ENABLED"
+      },
+      "remediationAction": "EnableS3BucketEncryption"
+    },
+    {
+      "ruleId": "HIPAA-2",
+      "description": "Ensure proper access controls for protected health information",
+      "resourceType": "AWS::IAM::Policy",
+      "complianceCheck": {
+        "type": "CustomCheck",
+        "checkFunction": "checkIAMPolicyPermissions"
+      },
+      "remediationAction": "RestrictIAMPolicy"
+    },
+    {
+      "ruleId": "HIPAA-3",
+      "description": "Ensure secure transmission of protected health information",
+      "resourceType": "AWS::ELB::LoadBalancer",
+      "complianceCheck": {
+        "type": "AWSConfig",
+        "configRuleName": "ELB_TLS_HTTPS_LISTENERS_ONLY"
+      },
+      "remediationAction": "EnableELBEncryption"
+    }
+  ]
+}

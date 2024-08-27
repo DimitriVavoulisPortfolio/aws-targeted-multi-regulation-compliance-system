@@ -1,0 +1,37 @@
+{
+  "regulation": "GLBA",
+  "version": "1.0",
+  "lastUpdated": "2024-08-26",
+  "rules": [
+    {
+      "ruleId": "GLBA-1",
+      "description": "Ensure protection of customer financial information",
+      "resourceType": "AWS::S3::Bucket",
+      "complianceCheck": {
+        "type": "AWSConfig",
+        "configRuleName": "S3_BUCKET_SERVER_SIDE_ENCRYPTION_ENABLED"
+      },
+      "remediationAction": "EnableS3BucketEncryption"
+    },
+    {
+      "ruleId": "GLBA-2",
+      "description": "Ensure proper access controls for financial data",
+      "resourceType": "AWS::IAM::Policy",
+      "complianceCheck": {
+        "type": "CustomCheck",
+        "checkFunction": "checkIAMPolicyPermissions"
+      },
+      "remediationAction": "RestrictIAMPolicy"
+    },
+    {
+      "ruleId": "GLBA-3",
+      "description": "Ensure secure transmission of financial data",
+      "resourceType": "AWS::ELB::LoadBalancer",
+      "complianceCheck": {
+        "type": "AWSConfig",
+        "configRuleName": "ELB_TLS_HTTPS_LISTENERS_ONLY"
+      },
+      "remediationAction": "EnableELBEncryption"
+    }
+  ]
+}

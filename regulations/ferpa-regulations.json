@@ -1,0 +1,37 @@
+{
+  "regulation": "FERPA",
+  "version": "1.0",
+  "lastUpdated": "2024-08-26",
+  "rules": [
+    {
+      "ruleId": "FERPA-1",
+      "description": "Ensure proper access controls for student records",
+      "resourceType": "AWS::IAM::Role",
+      "complianceCheck": {
+        "type": "CustomCheck",
+        "checkFunction": "checkIAMRolePermissions"
+      },
+      "remediationAction": "RestrictIAMRole"
+    },
+    {
+      "ruleId": "FERPA-2",
+      "description": "Ensure encryption of student data at rest",
+      "resourceType": "AWS::RDS::DBInstance",
+      "complianceCheck": {
+        "type": "AWSConfig",
+        "configRuleName": "RDS_STORAGE_ENCRYPTED"
+      },
+      "remediationAction": "EnableRDSEncryption"
+    },
+    {
+      "ruleId": "FERPA-3",
+      "description": "Ensure proper audit trails for access to student records",
+      "resourceType": "AWS::CloudTrail::Trail",
+      "complianceCheck": {
+        "type": "AWSConfig",
+        "configRuleName": "CLOUD_TRAIL_ENABLED"
+      },
+      "remediationAction": "EnableCloudTrail"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "regulation": "GDPR",
+  "version": "1.0",
+  "lastUpdated": "2024-08-26",
+  "rules": [
+    {
+      "ruleId": "GDPR-1",
+      "description": "Ensure personal data is encrypted at rest",
+      "resourceType": "AWS::S3::Bucket",
+      "complianceCheck": {
+        "type": "AWSConfig",
+        "configRuleName": "S3_BUCKET_SERVER_SIDE_ENCRYPTION_ENABLED"
+      },
+      "remediationAction": "EnableS3BucketEncryption"
+    },
+    {
+      "ruleId": "GDPR-2",
+      "description": "Ensure personal data is only accessible to authorized personnel",
+      "resourceType": "AWS::IAM::Policy",
+      "complianceCheck": {
+        "type": "CustomCheck",
+        "checkFunction": "checkIAMPolicyPermissions"
+      },
+      "remediationAction": "RestrictIAMPolicy"
+    },
+    {
+      "ruleId": "GDPR-3",
+      "description": "Ensure ability to erase personal data on request",
+      "resourceType": "AWS::DynamoDB::Table",
+      "complianceCheck": {
+        "type": "CustomCheck",
+        "checkFunction": "checkDynamoDBDataDeletion"
+      },
+      "remediationAction": "EnableDynamoDBDataDeletion"
+    }
+  ]
+}
