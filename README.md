@@ -83,78 +83,7 @@ graph TD
 
 ## Deployment
 
-This project uses AWS CloudFormation for infrastructure as code. To deploy the system in your own AWS account:
-
-1. Ensure you have AWS CLI configured with appropriate permissions.
-
-2. Clone the repository:
-   ```
-   git clone https://github.com/dimitrivavoulisportfolio/targeted-multi-regulation-compliance-system.git
-   ```
-
-3. Navigate to the project directory:
-   ```
-   cd targeted-multi-regulation-compliance-system
-   ```
-
-4. Create an S3 bucket in your AWS account to host the CloudFormation templates:
-   ```
-   aws s3 mb s3://your-cfn-templates-bucket-name
-   ```
-
-5. Upload all the CloudFormation templates to your S3 bucket:
-   ```
-   aws s3 sync cloudformation/ s3://your-cfn-templates-bucket-name/compliance-system/ --exclude "*" --include "*.yaml"
-   ```
-
-6. Deploy the individual stacks in the following order:
-
-   a. IAM Roles Stack:
-   ```
-   aws cloudformation create-stack --stack-name targeted-compliance-iam-roles --template-url https://your-cfn-templates-bucket-name.s3.amazonaws.com/compliance-system/iam-roles-stack.yaml --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
-   ```
-
-   b. KMS Keys Stack:
-   ```
-   aws cloudformation create-stack --stack-name targeted-compliance-kms-keys --template-url https://your-cfn-templates-bucket-name.s3.amazonaws.com/compliance-system/kms-keys-stack.yaml
-   ```
-
-   c. CloudTrail Stack:
-   ```
-   aws cloudformation create-stack --stack-name targeted-compliance-cloudtrail --template-url https://your-cfn-templates-bucket-name.s3.amazonaws.com/compliance-system/cloudtrail-stack.yaml --capabilities CAPABILITY_IAM
-   ```
-
-   d. CloudWatch Logs Stack:
-   ```
-   aws cloudformation create-stack --stack-name targeted-compliance-cloudwatch-logs --template-url https://your-cfn-templates-bucket-name.s3.amazonaws.com/compliance-system/cloudwatch-logs-stack.yaml
-   ```
-
-   e. SNS Notification Stack:
-   ```
-   aws cloudformation create-stack --stack-name targeted-compliance-sns --template-url https://your-cfn-templates-bucket-name.s3.amazonaws.com/compliance-system/sns-notification-stack.yaml
-   ```
-
-   f. Secondary Bucket Stack:
-   ```
-   aws cloudformation create-stack --stack-name targeted-compliance-secondary-bucket --template-url https://your-cfn-templates-bucket-name.s3.amazonaws.com/compliance-system/secondary-bucket-stack.yaml
-   ```
-
-   g. Primary Bucket Stack:
-   ```
-   aws cloudformation create-stack --stack-name targeted-compliance-primary-bucket --template-url https://your-cfn-templates-bucket-name.s3.amazonaws.com/compliance-system/primary-bucket-stack.yaml
-   ```
-
-7. Monitor the stack creation process in the AWS CloudFormation console or using the AWS CLI:
-   ```
-   aws cloudformation describe-stacks --stack-name targeted-compliance-primary-bucket
-   ```
-
-8. After all stacks are created successfully, upload the regulation JSON files to the primary S3 bucket:
-   ```
-   aws s3 sync regulations/ s3://your-primary-bucket-name/regulations/
-   ```
-
-Note: Ensure that you have the necessary permissions to create these resources in your AWS account. You may need to customize the stack names and parameters based on your specific requirements. Wait for each stack to complete before starting the next one.
+For deployment instructions, please refer to the deployment guide.
 
 ## Adding New Regulations
 
