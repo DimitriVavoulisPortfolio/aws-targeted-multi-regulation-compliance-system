@@ -1,0 +1,159 @@
+{
+  "Comment": "Remediation Workflow for Non-Compliant Resources",
+  "StartAt": "DetermineRemediationType",
+  "States": {
+    "DetermineRemediationType": {
+      "Type": "Task",
+      "Resource": "${DetermineRemediationLambdaArn}",
+      "Next": "RemediationTypeChoice",
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException"],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "HandleRemediationError"
+        }
+      ]
+    },
+    "RemediationTypeChoice": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.remediationType",
+          "StringEquals": "Automatic",
+          "Next": "PerformAutomaticRemediation"
+        },
+        {
+          "Variable": "$.remediationType",
+          "StringEquals": "Manual",
+          "Next": "RequestManualApproval"
+        }
+      ],
+      "Default": "HandleRemediationError"
+    },
+    "PerformAutomaticRemediation": {
+      "Type": "Task",
+      "Resource": "${AutomaticRemediationLambdaArn}",
+      "Next": "VerifyRemediation",
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException"],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "HandleRemediationError"
+        }
+      ]
+    },
+    "RequestManualApproval": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
+      "Parameters": {
+        "FunctionName": "${ManualApprovalLambdaArn}",
+        "Payload": {
+          "taskToken.$": "$$.Task.Token",
+          "input.$": "$"
+        }
+      },
+      "Next": "ApprovalChoice",
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException"],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "HandleRemediationError"
+        }
+      ]
+    },
+    "ApprovalChoice": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.approved",
+          "BooleanEquals": true,
+          "Next": "PerformManualRemediation"
+        },
+        {
+          "Variable": "$.approved",
+          "BooleanEquals": false,
+          "Next": "UpdateRemediationStatus"
+        }
+      ],
+      "Default": "HandleRemediationError"
+    },
+    "PerformManualRemediation": {
+      "Type": "Task",
+      "Resource": "${ManualRemediationLambdaArn}",
+      "Next": "VerifyRemediation",
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException"],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorErrors": ["States.ALL"],
+          "Next": "HandleRemediationError"
+        }
+      ]
+    },
+    "VerifyRemediation": {
+      "Type": "Task",
+      "Resource": "${VerifyRemediationLambdaArn}",
+      "Next": "RemediationSuccessful",
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException"],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "HandleRemediationError"
+        }
+      ]
+    },
+    "RemediationSuccessful": {
+      "Type": "Task",
+      "Resource": "${UpdateStatusLambdaArn}",
+      "Parameters": {
+        "status": "REMEDIATED",
+        "input.$": "$"
+      },
+      "End": true
+    },
+    "HandleRemediationError": {
+      "Type": "Task",
+      "Resource": "${HandleErrorLambdaArn}",
+      "Next": "UpdateRemediationStatus"
+    },
+    "UpdateRemediationStatus": {
+      "Type": "Task",
+      "Resource": "${UpdateStatusLambdaArn}",
+      "End": true
+    }
+  }
+}
