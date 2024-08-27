@@ -83,7 +83,7 @@ graph TD
 
 ## Deployment
 
-For deployment instructions, please refer to the deployment guide.
+For deployment instructions, please refer to the Deployment Guide.
 
 ## Adding New Regulations
 
